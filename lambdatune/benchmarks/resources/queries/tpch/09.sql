@@ -30,5 +30,4 @@ group by
 	o_year
 order by
 	nation,
-	o_year desc
-limit 1;
+	o_year desc;

@@ -10,10 +10,10 @@ select
 	s_comment
 from
 	part,
-	supplier,
-	partsupp,
-	nation,
-	region
+	supplier s1,
+	partsupp ps1,
+	nation n1,
+	region r1
 where
 	p_partkey = ps_partkey
 	and s_suppkey = ps_suppkey
@@ -26,10 +26,10 @@ where
 		select
 			min(ps_supplycost)
 		from
-			partsupp,
-			supplier,
-			nation,
-			region
+			partsupp ps2,
+			supplier s2,
+			nation n2,
+			region r2
 		where
 			p_partkey = ps_partkey
 			and s_suppkey = ps_suppkey
@@ -42,4 +42,4 @@ order by
 	n_name,
 	s_name,
 	p_partkey
-limit 10;
+limit 100;

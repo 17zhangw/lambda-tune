@@ -23,7 +23,15 @@ class LLMResponse:
         return self.hidden_table_cols
 
     def get_config(self, hide=False):
-        config = json.loads(self.config)["commands"]
+        cc = self.config
+        if cc.startswith("```json"):
+            assert cc.endswith("```")
+            cc = cc[7:-3]
+        elif cc.startswith("```python"):
+            assert cc.endswith("```")
+            cc = cc[9:-3]
+
+        config = json.loads(cc)["commands"]
 
         if self.has_hidden_table_cols() and not hide:
             for idx, cfg in enumerate(config):

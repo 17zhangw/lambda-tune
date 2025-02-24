@@ -38,4 +38,4 @@ group by
 order by
 	numwait desc,
 	s_name
-limit 1;
+limit 100;

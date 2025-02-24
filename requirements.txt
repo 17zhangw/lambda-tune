@@ -29,7 +29,6 @@ MarkupSafe==2.1.5
 mdurl==0.1.2
 multidict==6.0.5
 mypy-extensions==1.0.0
-mysqlclient==2.2.4
 numpy==1.26.4
 openai==0.28.0
 packaging==24.0
@@ -39,7 +38,7 @@ pillow==10.3.0
 platformdirs==4.2.2
 plotly==5.22.0
 protobuf==4.25.3
-psycopg2==2.9.9
+psycopg2-binary==2.9.9
 pyarrow==16.1.0
 pydantic==2.7.3
 pydantic_core==2.18.4

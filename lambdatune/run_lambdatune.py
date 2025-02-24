@@ -5,7 +5,7 @@ import argparse
 from lambdatune.utils import get_dbms_driver
 from pkg_resources import resource_filename
 
-from lambdatune.benchmarks import get_job_queries, get_tpch_queries, get_tpcds_queries
+from lambdatune.benchmarks import get_job_queries, get_tpch_queries, get_tpcds_queries, get_dsb_queries
 from lambdatune.config_selection.configuration_selector import ConfigurationSelector
 
 from lambdatune.prompt_generator.compress_query_plans import get_configurations_with_compression
@@ -65,6 +65,7 @@ if __name__ == "__main__":
     if benchmark == "tpch": queries = get_tpch_queries()
     elif benchmark == "tpcds": queries = get_tpcds_queries()
     elif benchmark == "job": queries = get_job_queries()
+    elif "dsb" in benchmark: queries = get_dsb_queries(benchmark)
     else:
         raise Exception("Benchmark {} does not exist. Pick one from {tpch, tpcds, job}"%(benchmark))
 
@@ -79,27 +80,27 @@ if __name__ == "__main__":
                                             memory_gb=memory,
                                             num_cores=cores,
                                             num_configs=3)
+    else:
+        timeouts = [10]
 
-    timeouts = [10]
+        configurations = ConfigurationSelector.load_configs(llm_configs_dir, system=system)
 
-    configurations = ConfigurationSelector.load_configs(llm_configs_dir, system=system)
+        for timeout in timeouts:
+            selector = ConfigurationSelector(configs=configurations,
+                                             driver=driver,
+                                             queries=queries,
+                                             enable_query_scheduler=True,
+                                             create_all_indexes_first=False,
+                                             create_indexes=True,
+                                             drop_indexes=True,
+                                             reset_command="ALTER SYSTEM RESET ALL;",
+                                             initial_time_out_seconds=timeout,
+                                             timeout_interval=10,
+                                             max_rounds=5,
+                                             benchmark_name=benchmark,
+                                             system=system,
+                                             adaptive_timeout=adaptive_timeout,
+                                             output_dir=output_dir
+                                             )
 
-    for timeout in timeouts:
-        selector = ConfigurationSelector(configs=configurations,
-                                         driver=driver,
-                                         queries=queries,
-                                         enable_query_scheduler=True,
-                                         create_all_indexes_first=False,
-                                         create_indexes=True,
-                                         drop_indexes=True,
-                                         reset_command="ALTER SYSTEM RESET ALL;",
-                                         initial_time_out_seconds=timeout,
-                                         timeout_interval=10,
-                                         max_rounds=5,
-                                         benchmark_name=benchmark,
-                                         system=system,
-                                         adaptive_timeout=adaptive_timeout,
-                                         output_dir=output_dir
-                                         )
-
-        selector.select_configuration()
+            selector.select_configuration()

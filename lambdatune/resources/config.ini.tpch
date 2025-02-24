@@ -1,0 +1,7 @@
+[LAMBDA_TUNE]
+llm = gpt-4o
+database = benchbase
+
+[POSTGRES]
+user = admin
+port = 5433

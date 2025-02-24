@@ -35,5 +35,4 @@ where
 	and s_nationkey = n_nationkey
 	and n_name = 'ALGERIA'
 order by
-	s_name
-limit 1;
+	s_name;

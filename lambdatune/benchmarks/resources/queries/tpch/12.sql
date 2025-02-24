@@ -26,5 +26,4 @@ where
 group by
 	l_shipmode
 order by
-	l_shipmode
-limit 1;
+	l_shipmode;

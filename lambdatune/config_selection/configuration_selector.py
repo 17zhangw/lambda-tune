@@ -5,7 +5,7 @@ import logging
 
 from collections import defaultdict
 
-from lambdatune.drivers import PostgresDriver, MySQLDriver
+from lambdatune.drivers import PostgresDriver
 from lambdatune.config_selection import Configuration, queries_to_index
 from lambdatune.config_selection import generate_query_clusters
 from lambdatune.config_selection.query_to_index import QueryToIndex
@@ -15,7 +15,8 @@ from lambdatune.config_selection.query_order_dp import compute_optimal_order
 from lambdatune.llm_response import LLMResponse
 
 
-logging.basicConfig(level=logging.DEBUG)
+formatter = "%(levelname)s:%(asctime)s [%(filename)s:%(lineno)s]  %(message)s"
+logging.basicConfig(format=formatter, level=logging.DEBUG, force=True)
 
 
 class ConfigurationSelector:

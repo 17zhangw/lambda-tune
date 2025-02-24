@@ -9,13 +9,13 @@ select
 from
 	customer,
 	orders,
-	lineitem
+	lineitem l1
 where
 	o_orderkey in (
 		select
 			l_orderkey
 		from
-			lineitem
+			lineitem l2
 		group by
 			l_orderkey having
 				sum(l_quantity) > 312
@@ -31,4 +31,4 @@ group by
 order by
 	o_totalprice desc,
 	o_orderdate
-limit 1;
+limit 100;

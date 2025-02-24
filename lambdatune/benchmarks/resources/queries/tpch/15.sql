@@ -1,5 +1,5 @@
 
-with revenue0 as (
+with revenue0 as NOT MATERIALIZED (
 	select
 		l_suppkey as supplier_no,
 		sum(l_extendedprice * (1 - l_discount)) as total_revenue
@@ -30,5 +30,4 @@ where
 			revenue0
 	)
 order by
-	s_suppkey
-limit 1;
+	s_suppkey;

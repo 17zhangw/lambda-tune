@@ -27,5 +27,4 @@ order by
 	supplier_cnt desc,
 	p_brand,
 	p_type,
-	p_size
-limit 1;
+	p_size;

@@ -1,7 +1,8 @@
+
 select
 	sum(l_extendedprice) / 7.0 as avg_yearly
 from
-	lineitem,
+	lineitem l1,
 	part
 where
 	p_partkey = l_partkey
@@ -11,8 +12,7 @@ where
 		select
 			0.2 * avg(l_quantity)
 		from
-			lineitem
+			lineitem l2
 		where
 			l_partkey = p_partkey
-	)
-limit 1;
+	);

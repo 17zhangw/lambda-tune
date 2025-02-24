@@ -50,17 +50,19 @@ class PostgresPlan:
 class PostgresDriver(Driver):
     def __init__(self, conf):
         self.config = conf
+        self.port = port = 5432 if "port" not in conf else conf["port"]
 
         c = 0
 
         while True:
             try:
                 if "password" in self.config:
-                    self.conn = psycopg2.connect(database=self.config["db"], user=self.config["user"],
-                        password=self.config["password"]
+                    self.conn = psycopg2.connect(host="localhost", database=self.config["db"], user=self.config["user"],
+                        password=self.config["password"],
+                        port=port,
                     )
                 else:
-                    self.conn = psycopg2.connect("dbname='%s' user='%s'" % (self.config["db"], self.config["user"]))
+                    self.conn = psycopg2.connect("host=localhost dbname='%s' user='%s' port=%d" % (self.config["db"], self.config["user"], port))
                 break
             except Exception as e:
                 c += 1
@@ -277,7 +279,7 @@ class PostgresDriver(Driver):
         self.cursor.execute("ALTER SYSTEM RESET ALL;")
 
         if restart_system:
-            PostgresDriver.restart_system()
+            self.restart_system()
 
         self.__init__(self.config)
 
@@ -400,7 +402,7 @@ class PostgresDriver(Driver):
                     print(e)
 
         if restart:
-            PostgresDriver.restart_system()
+            self.restart_system()
             logging.info("waiting 5 secs...")
             time.sleep(5)
             self.__init__(self.config)
@@ -417,14 +419,10 @@ class PostgresDriver(Driver):
 
         return result
 
-    @staticmethod
-    def restart_system():
-        if platform.system() == "Darwin":
-            restart_cmd = "brew services restart postgresql"
-        elif platform.system() == "Linux":
-            restart_cmd = "echo dbbert | sudo -S service postgresql restart"
-        else:
-            raise Exception(f"System {platform.system()} is not supported.")
+    def restart_system(self):
         logging.info("Restarting Postgres")
+        restart_cmd = f"/mnt/nvme0n1/wz2/noisepage/pg_ctl stop -D /mnt/nvme0n1/wz2/noisepage/pgdata{self.port}"
         p = os.popen(restart_cmd).read()
+        restart_cmd = f"/mnt/nvme0n1/wz2/noisepage/pg_ctl start -D /mnt/nvme0n1/wz2/noisepage/pgdata{self.port}"
+        os.popen(restart_cmd)
         logging.info("Done!")

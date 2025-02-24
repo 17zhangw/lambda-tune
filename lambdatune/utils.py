@@ -2,7 +2,7 @@ import configparser
 import logging
 
 from pkg_resources import resource_filename
-from lambdatune.drivers import PostgresDriver, MySQLDriver
+from lambdatune.drivers import PostgresDriver
 
 
 def get_dbms_driver(system, db=None, user=None, password=None):
@@ -18,8 +18,8 @@ def get_dbms_driver(system, db=None, user=None, password=None):
     if not password:
         password: str = config_parser[system]["password"] if "password" in config_parser[system] else None
 
-    if not db:
-        db: str = config_parser["LAMBDA_TUNE"]["database"]
+    db: str = config_parser["LAMBDA_TUNE"]["database"]
+    port = 5432 if "port" not in config_parser[system] else config_parser[system]["port"]
 
     config_parser = configparser.ConfigParser()
     f = resource_filename("lambdatune", "resources/config.ini")
@@ -31,12 +31,9 @@ def get_dbms_driver(system, db=None, user=None, password=None):
         driver = PostgresDriver({
             "user": user,
             "password": password,
-            "db": db})
-    elif system.lower() == "mysql":
-        driver = MySQLDriver({
-            "user": user,
-            "password": password,
-            "db": db})
+            "db": db,
+            "port": port,
+        })
     else:
         raise Exception(f"Unsupported DBMS: {system}")
 
