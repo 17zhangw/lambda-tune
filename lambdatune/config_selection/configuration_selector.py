@@ -265,10 +265,11 @@ class ConfigurationSelector:
                                 pass
 
                     query_exec_start = time.time()
-                    r = self.driver.explain(query_str,
-                                            execute=True,
-                                            timeout=remaining_time*1000,
-                                            results_path=f"{config_path}/{query_id}.json")
+                    if remaining_time > 0:
+                        r = self.driver.explain(query_str,
+                                                execute=True,
+                                                timeout=remaining_time*1000,
+                                                results_path=f"{config_path}/{query_id}.json")
                     query_exec_time = time.time() - query_exec_start
                     round_query_execution_time += query_exec_time
 

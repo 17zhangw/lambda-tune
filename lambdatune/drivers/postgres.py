@@ -51,6 +51,7 @@ class PostgresDriver(Driver):
     def __init__(self, conf):
         self.config = conf
         self.port = port = 5432 if "port" not in conf else conf["port"]
+        self.max_pqt = (300 if "max_pqt" not in conf else conf["max_pqt"]) * 1000
 
         c = 0
 
@@ -156,6 +157,7 @@ class PostgresDriver(Driver):
             start = time.time()
 
             if timeout:
+                timeout = min(timeout, self.max_pqt)
                 cursor.execute(f"SET statement_timeout={timeout}")
 
             try:
@@ -173,7 +175,10 @@ class PostgresDriver(Driver):
 
                 duration = (time.time() - start) * 1_000
             except Exception as e:
-                duration = "TIMEOUT"
+                if timeout == self.max_pqt:
+                    duration = self.max_pqt
+                else:
+                    duration = "TIMEOUT"
 
         if timeout:
             try:

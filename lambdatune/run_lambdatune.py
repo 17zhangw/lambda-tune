@@ -1,3 +1,4 @@
+from pathlib import Path
 import configparser
 import logging
 import argparse
@@ -86,6 +87,9 @@ if __name__ == "__main__":
         configurations = ConfigurationSelector.load_configs(llm_configs_dir, system=system)
 
         for timeout in timeouts:
+            if (Path(output_dir) / "reports.json").exists():
+                continue
+
             selector = ConfigurationSelector(configs=configurations,
                                              driver=driver,
                                              queries=queries,
