@@ -7,20 +7,31 @@ import tiktoken
 from lambdatune.utils import get_llm, get_openai_key
 
 
-encoding = tiktoken.encoding_for_model(get_llm())
+encoding = tiktoken.encoding_for_model("gpt-4o" if get_llm() in ["o3-mini"] else get_llm())
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
 def get_response(text: str, temperature: float):
-    response = openai.ChatCompletion.create(
-        model="gpt-4o",
-        messages=[
-            {"role": "system", "content": "You are a helpful Database Administrator."},
-            {"role": "user", "content": text}
-        ],
-        temperature=temperature,
-        max_tokens=4096
-    )
+    if get_llm() in ["o3-mini"]:
+        response = openai.ChatCompletion.create(
+            model=get_llm(),
+            messages=[
+                {"role": "system", "content": "You are a helpful Database Administrator."},
+                {"role": "user", "content": text}
+            ],
+            # Need padding for thinking tokens.
+            max_completion_tokens=32768,
+        )
+    else:
+        response = openai.ChatCompletion.create(
+            model=get_llm(),
+            messages=[
+                {"role": "system", "content": "You are a helpful Database Administrator."},
+                {"role": "user", "content": text}
+            ],
+            temperature=temperature,
+            max_completion_tokens=4096,
+        )
 
     return response
 
